@@ -68,10 +68,10 @@ def stream_markup_timer(_, vidid, chat_id, played, dur):
         ],
         [
             InlineKeyboardButton(
-                text="⛦ ᴏᴡɴᴇʀ ❥", url=f"https://t.me/ll_SARKAR_MERA_BABU_ll"
+                text="⛦ ᴏᴡɴᴇʀ ❥", url=f"https://t.me/AllllllllllllllIllllllll"
             ),
             InlineKeyboardButton(
-                text="⛦ ᴄʜᴀᴛ ❥", url=f"https://t.me/TKS_CHAT_JOIN_BABY"
+                text="⛦ ᴄʜᴀᴛ ❥", url=f"https://t.me/Ak_support1"
             ),
         ],
         [InlineKeyboardButton(text=_["CLOSE_BUTTON"], callback_data="close")],
@@ -90,10 +90,10 @@ def stream_markup(_, videoid, chat_id):
         ],
         [
             InlineKeyboardButton(
-                text="⛦ ᴏᴡɴᴇʀ ❥", url=f"https://t.me/ll_SARKAR_MERA_BABU_ll"
+                text="⛦ ᴏᴡɴᴇʀ ❥", url=f"https://t.me/AllllllllllllllIllllllll"
             ),
             InlineKeyboardButton(
-                text="⛦ ᴄʜᴀᴛ ❥", url=f"https://t.me/TKS_CHAT_JOIN_BABY"
+                text="⛦ ᴄʜᴀᴛ ❥", url=f"https://t.me/Ak_support1"
             ),
         ],
         [InlineKeyboardButton(text=_["CLOSE_BUTTON"], callback_data="close")],
@@ -245,10 +245,10 @@ def stream_markup2(_, chat_id):
         ],
 [
             InlineKeyboardButton(
-                text="⛦ ᴏᴡɴᴇʀ ❥", url=f"https://t.me/ll_SARKAR_MERA_BABU_ll"
+                text="⛦ ᴏᴡɴᴇʀ ❥", url=f"https://t.me/AllllllllllllllIllllllll"
             ),
             InlineKeyboardButton(
-                text="⛦ ᴄʜᴀᴛ ❥", url=f"https://t.me/TG_NAME_STYLE"
+                text="⛦ ᴄʜᴀᴛ ❥", url=f"https://t.me/Ak_support1"
             ),
         ],
 

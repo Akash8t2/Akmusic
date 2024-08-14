@@ -1,10 +1,12 @@
 import pyrogram
+pyrogram.utils.MIN_CHANNEL_ID = -1001860470873
 from pyrogram import Client, errors
 from pyrogram.enums import ChatMemberStatus, ParseMode
 
 import config
 
 from ..logging import LOGGER
+
 
 
 class Hotty(Client):

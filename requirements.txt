@@ -33,6 +33,7 @@ pykeyboard
 pyshorteners
 pyrofork 
 python-dotenv
+python-whois
 phonenumbers
 pyyaml==6.0.1
 requests

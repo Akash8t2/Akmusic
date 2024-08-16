@@ -7,7 +7,7 @@ from BrandrdXMusic.mongo.readable_time import get_readable_time
 from BrandrdXMusic.mongo.afkdb import add_afk, is_afk, remove_afk
 
 
-@app.on_message(filters.command(["afk", "brb"], prefixes=["/", "!"]))
+@app.on_message(filters.command(["afk", "bye", "goodnight", "gn"], prefixes=["/", "!", ""]))
 async def active_afk(_, message: Message):
     if message.sender_chat:
         return

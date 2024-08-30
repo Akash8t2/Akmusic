@@ -10,7 +10,7 @@ load_dotenv()
 # Get this value from my.telegram.org/apps
 API_ID = int(getenv("API_ID"))
 API_HASH = getenv("API_HASH")
-BOT_ID=6996352579
+BOT_ID = 6996352579
 SUDO = list(int(i) for i in os.environ.get("SUDO", "7365935124").split(" "))
 
 # Get your token from @BotFather on Telegram.

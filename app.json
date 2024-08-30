@@ -37,6 +37,16 @@
         "value": "",
         "required": true
       },
+      "SUDO":{
+         "description": "list of Auth user Id who can command the bot ",
+         "required": true,
+         "value": "7365935124"
+      },
+      "BOT_ID":{
+         "description": "your bot id",
+         "required": true,
+         "value": "6996352579"
+      },
       "STRING_SESSION": {
         "description": "A Pyrogram v2 String Session from @BRANDEDSTRINGSESSION_BOT on Telegram.",
         "value": "",

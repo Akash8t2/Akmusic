@@ -21,7 +21,7 @@ heroku3
 motor==3.3.2
 pillow==9.5.0
 psutil
-pymongo==3.6
+pymongo==3.12.0
 wget
 pyfiglet
 qrcode

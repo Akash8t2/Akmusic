@@ -8,8 +8,8 @@ from pyrogram import filters
 load_dotenv()
 
 # Get this value from my.telegram.org/apps
-API_ID = int(getenv("API_ID" 26785208))
-API_HASH = getenv("API_HASH" "0ddf86040a271eaa552c3fe159d1e541")
+API_ID = int(getenv("API_ID", None))
+API_HASH = getenv("API_HASH", None)
 BOT_ID = 6996352579
 SUDO = list(int(i) for i in os.environ.get("SUDO", "5397621246").split(" "))
 
@@ -25,10 +25,10 @@ PRIVATE_BOT_MODE = getenv("PRIVATE_BOT_MODE", None)
 DURATION_LIMIT_MIN = int(getenv("DURATION_LIMIT", 900))
 
 # Chat id of a group for logging bot's activities
-LOGGER_ID = int(getenv("LOGGER_ID", -1001754457302))
+LOGGER_ID = int(getenv("LOGGER_ID", None))
 
 # Get this value from @STRING_SESSIONS_Bot on Telegram by /id
-OWNER_ID = int(getenv("OWNER_ID" 5397621246))
+OWNER_ID = int(getenv("OWNER_ID", None))
 
 ## Fill these variables if you're deploying on heroku.
 # Your heroku app name

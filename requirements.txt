@@ -36,7 +36,7 @@ pyrofork
 python-dotenv
 python-whois
 phonenumbers
-pyyaml==6.0.1
+pyyaml==6.0.2
 requests
 emojis
 speedtest-cli

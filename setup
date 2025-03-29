@@ -1,126 +1,184 @@
 #!/bin/bash
 
-pprint (){
-	cred='\033[0;31m'
-	cgreen='\033[0;32m'
-	cyellow='\033[0;33m'
-	cblue='\033[0;34m'
-	cpurple='\033[0;35m'
-	eval "export color='$cpurple'"
-	[ ! -z $2 ] && eval "export color=\"\$$2\""
-    printf "$color $1"
+# Colors
+RED='\033[0;31m'
+GREEN='\033[0;32m'
+YELLOW='\033[0;33m'
+BLUE='\033[0;34m'
+PURPLE='\033[0;35m'
+NC='\033[0m' # No Color
+
+# Log files
+NODE_LOG="nodelog.txt"
+PIP_LOG="pypilog.txt"
+
+# Function to print colored messages
+pprint() {
+    local color="$PURPLE"
+    [ ! -z "$2" ] && color="${!2}"
+    printf "${color}%s${NC}" "$1"
 }
 
-color_reset(){ printf '\033[0;37m';}
-
-yesnoprompt(){
-	old_stty_cfg=$(stty -g)
-	stty raw -echo ; answer=$(head -c 1)
-	stty $old_stty_cfg
-	echo "$answer" | grep -iq "^y"
+# Function to reset color
+color_reset() {
+    printf "${NC}"
 }
 
-update() {
-	pprint "\n\nUpdating package list.. "
-	sudo apt update 2>&1 | grep "can be upgraded" &>/dev/null
-	if [ $? -eq 0 ]; then
-		pprint "UPDATE AVAILABLE" "cgreen"
-		pprint "\n\nDo you want to automatically upgrade (y/n)?"
-		if yesnoprompt; then
-			pprint "\n\nUpgrading packages.. "
-			sudo apt upgrade -y &>/dev/null &&
-			pprint "DONE!\n\n" "cgreen" || (pprint "FAIL.\n\n" "cred"; exit 1)
-		else
-			echo
-		fi
-	else
-		pprint "ALREADY UP TO DATE\n\n" "cgreen"
-	fi
+# Function for yes/no prompts
+yesnoprompt() {
+    local old_stty_cfg=$(stty -g)
+    stty raw -echo
+    answer=$(head -c 1)
+    stty "$old_stty_cfg"
+    echo "$answer" | grep -iq "^y"
 }
 
-packages(){
-	if ! command -v pip &>/dev/null; then
-		pprint "Couldn't found pip, installing now..."
-		sudo apt install python3-pip -y 2>pypilog.txt 1>/dev/null &&
-		pprint "SUCCESS.\n\n" "cgreen" || (pprint "FAIL.\n\n" "cred"; exit 1)
-	fi
-
-	if ! command -v ffmpeg &>/dev/null; then
-		pprint "Couldn't found ffmpeg, installing now..."
-		if sudo apt install ffmpeg -y &>/dev/null;then
-			pprint "SUCCESS.\n\n" "cgreen"
-		else
-			pprint "FAIL.\n\n" "cred"
-			pprint "You need to install ffmpeg manually in order to deploy BrandrdXMusic, exiting...\n" "cblue"
-			exit 1
-		fi
-	fi
-
-	# Check ffmpeg version and warn user if necessary.
-	fv=$(grep -Po 'version (3.*?) ' <<< $(ffmpeg -version)) &&
-	pprint "Playing live streams not going to work since you have ffmpeg $fv, live streams are supported by version 4+.\n" "cblue"
+# Update system packages
+update_system() {
+    pprint "\n\nUpdating package list.. "
+    if sudo apt update 2>&1 | grep -q "can be upgraded"; then
+        pprint "UPDATE AVAILABLE\n" "GREEN"
+        pprint "\nDo you want to automatically upgrade packages (y/n)? "
+        if yesnoprompt; then
+            pprint "\nUpgrading packages.. "
+            if sudo apt upgrade -y &>/dev/null; then
+                pprint "SUCCESS!\n\n" "GREEN"
+            else
+                pprint "FAILED\n\n" "RED"
+                exit 1
+            fi
+        else
+            echo
+        fi
+    else
+        pprint "ALREADY UP TO DATE\n\n" "GREEN"
+    fi
 }
 
+# Check and install required system packages
+install_packages() {
+    # Install pip if not found
+    if ! command -v pip &>/dev/null; then
+        pprint "Couldn't find pip, installing now..."
+        if sudo apt install python3-pip -y &>>"$PIP_LOG"; then
+            pprint "SUCCESS\n\n" "GREEN"
+        else
+            pprint "FAILED\n\n" "RED"
+            exit 1
+        fi
+    fi
 
-node(){
-	command -v npm &>/dev/null && return
-	pprint "Installing Nodejs and Npm..  "
-	curl -fssL https://deb.nodesource.com/setup_19.x | sudo -E bash - &>nodelog.txt &&
-	sudo apt install -y nodejs &>>nodelog.txt &&
-	sudo npm i -g npm &>>nodelog.txt &&
-	pprint "SUCCESS!\n" "cgreen" || (pprint "FAIL.\n" "cred"; exit 1)
+    # Install ffmpeg if not found
+    if ! command -v ffmpeg &>/dev/null; then
+        pprint "Installing ffmpeg..."
+        if sudo apt install ffmpeg -y &>/dev/null; then
+            pprint "SUCCESS\n\n" "GREEN"
+        else
+            pprint "FAILED\n\n" "RED"
+            pprint "You need to install ffmpeg manually to deploy BrandrdXMusic\n" "BLUE"
+            exit 1
+        fi
+    fi
+
+    # Check ffmpeg version
+    local ffmpeg_version=$(ffmpeg -version | grep -Po 'version (3.*?) ' || echo "")
+    if [[ "$ffmpeg_version" =~ 3.* ]]; then
+        pprint "Warning: Live streams may not work with ffmpeg $ffmpeg_version (requires v4+)\n" "YELLOW"
+    fi
 }
 
-
-installation(){
-	pprint "\n\nUpgrading pip and installing dependency packages..."
-	pip3 install -U pip &>>pypilog.txt &&
-	pip3 install -U -r requirements.txt &>>pypilog.txt &&
-	pprint "DONE.\n" "cgreen" && return
-	pprint "FAIL.\n" "cred"
-	exit 1
+# Install Node.js and npm
+install_node() {
+    if command -v npm &>/dev/null; then
+        return
+    fi
+    
+    pprint "Installing Node.js and npm.. "
+    if curl -fsSL https://deb.nodesource.com/setup_19.x | sudo -E bash - &>>"$NODE_LOG" && \
+       sudo apt install -y nodejs &>>"$NODE_LOG" && \
+       sudo npm i -g npm &>>"$NODE_LOG"; then
+        pprint "SUCCESS!\n" "GREEN"
+    else
+        pprint "FAILED\n" "RED"
+        exit 1
+    fi
 }
 
-clear
-pprint "Welcome to BrandrdXMusic Setup Installer\n\n"
-pprint "If you see any error during Installation Process, Please refer to these files for logs: "
-pprint "\nFor node js errors , Checkout nodelog.txt"
-pprint "\nFor pypi packages errors , Checkout pypilog.txt"
-sleep 1
-pprint "\n\nScript needs sudo privileges in order to update & install packages.\n"
-sudo test
+# Install Python dependencies
+install_dependencies() {
+    pprint "\nUpgrading pip and installing dependencies..."
+    if pip3 install -U pip &>>"$PIP_LOG" && \
+       pip3 install -U -r requirements.txt &>>"$PIP_LOG"; then
+        pprint "SUCCESS!\n" "GREEN"
+    else
+        pprint "FAILED\n" "RED"
+        exit 1
+    fi
+}
 
-update
-packages
-node
-installation
-pprint "\n\n\n\n\nWCGKING Installation Completed !" "cgreen"
-sleep 1
-clear
+# Get user input for configuration
+get_configuration() {
+    clear
+    pprint "\nEnter Your Configuration Values\n\n" "BLUE"
+    
+    pprint "API ID: "; color_reset; read -r api_id
+    pprint "API HASH: "; color_reset; read -r api_hash
+    pprint "BOT TOKEN: "; color_reset; read -r bot_token
+    pprint "OWNER ID: "; color_reset; read -r owner_id
+    pprint "MONGO DB URI: "; color_reset; read -r mongo_db
+    pprint "LOG GROUP ID: "; color_reset; read -r logger_id
+    pprint "STRING SESSION: "; color_reset; read -r string_session
 
-pprint "\nEnter Your Values Below\n\n\n"
-pprint "API ID: "; color_reset; read api_id
-pprint "\nAPI HASH: "; color_reset; read api_hash
-pprint "\nBOT TOKEN: "; color_reset; read bot_token
-pprint "\nOWNER ID:"; color_reset; read ownid
-pprint "\nMONGO DB URI: "; color_reset; read mongo_db
-pprint "\nLOG GROUP ID: "; color_reset; read logger
-pprint "\nSTRING SESSION: "; color_reset; read string_session
+    pprint "\nProcessing your configuration..." "GREEN"
+    sleep 2
+}
 
-pprint "\n\nProcessing your vars, wait a while !" "cgreen"
+# Create .env file
+create_env_file() {
+    cat > .env << EOF
+API_ID=$api_id
+API_HASH=$api_hash
+BOT_TOKEN=$bot_token
+MONGO_DB_URI=$mongo_db
+LOGGER_ID=$logger_id
+STRING_SESSION=$string_session
+OWNER_ID=$owner_id
+EOF
 
-if [ -f .env ]; then
-	rm .env
-fi
+    # Secure the .env file
+    chmod 600 .env
+}
 
-echo """API_ID = $api_id
-API_HASH = $api_hash
-BOT_TOKEN = $bot_token
-MONGO_DB_URI = $mongo_db
-LOGGER_ID = $logger
-STRING_SESSION = $string_session
-OWNER_ID = $ownid""" > .env
-clear
+# Main execution
+main() {
+    clear
+    pprint "Welcome to BrandrdXMusic Setup Installer\n\n" "PURPLE"
+    pprint "Note: During installation, check these files for logs:\n" "BLUE"
+    pprint "  - Node.js errors: $NODE_LOG\n"
+    pprint "  - Python package errors: $PIP_LOG\n"
+    sleep 2
+    
+    pprint "\nThis script requires sudo privileges to install packages.\n" "YELLOW"
+    sudo -v || (pprint "Error: Sudo access required\n" "RED"; exit 1)
 
-pprint "\n\n\nThanks for using BrandrdXMusic installer, your vars have been saved successfully ! \nIf you wanna add more variables add them in your env by : vi .env"
-pprint "\n\nNow you can start the bot by : bash start\n\n"
+    # Installation steps
+    update_system
+    install_packages
+    install_node
+    install_dependencies
+
+    clear
+    pprint "\nBrandrdXMusic Installation Completed!\n" "GREEN"
+    sleep 1
+
+    get_configuration
+    create_env_file
+
+    clear
+    pprint "\nConfiguration saved successfully!\n\n" "GREEN"
+    pprint "You can start the bot with: bash start\n\n" "BLUE"
+    pprint "To edit configuration later: nano .env\n\n" "YELLOW"
+}
+
+# Run main function
+main

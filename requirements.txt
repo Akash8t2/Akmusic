@@ -60,3 +60,4 @@ MukeshAPI
 moviepy
 lyricsgenius
 lexica-api
+cachetools

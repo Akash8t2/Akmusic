@@ -1,4 +1,4 @@
-name: 🇺🇸 English
+name: "🇺🇸 English"
 
 # ======================
 # BAN/UNBAN MESSAGES
@@ -19,285 +19,313 @@ general_5: "🔇 Bot isn't streaming in voice chat."
 # ======================
 # TELEGRAM DOWNLOADER
 # ======================
-tg_1 = "⬇️ <b>Download Progress</b>\n\n<b>File:</b> {0}\n<b>Size:</b> {1}\n<b>Done:</b> {2}%\n<b>Speed:</b> {3}/s\n<b>ETA:</b> {4}"
-tg_2 = "✅ Download complete! Processing file...\n\n<b>Time taken:</b> {0}"
-tg_3 = "❌ Failed to download media from Telegram. Please try again."
-tg_4 = "ℹ️ Download already completed."
-tg_5 = "ℹ️ Download completed or cancelled."
-tg_6 = "🚫 Download cancelled."
-tg_7 = "🚫 Download cancelled by: {0}"
-tg_8 = "❌ Failed to stop download."
-tg_9 = "❌ No active download task found."
+tg_1: |
+  ⬇️ <b>Download Progress</b>
+  <b>File:</b> {0}
+  <b>Size:</b> {1}
+  <b>Done:</b> {2}%
+  <b>Speed:</b> {3}/s
+  <b>ETA:</b> {4}
+tg_2: |
+  ✅ Download complete! Processing file...
+  <b>Time taken:</b> {0}
+tg_3: "❌ Failed to download media from Telegram. Please try again."
+tg_4: "ℹ️ Download already completed."
+tg_5: "ℹ️ Download completed or cancelled."
+tg_6: "🚫 Download cancelled."
+tg_7: "🚫 Download cancelled by: {0}"
+tg_8: "❌ Failed to stop download."
+tg_9: "❌ No active download task found."
 
 # ======================
 # CALLBACK MESSAGES
 # ======================
-call_1 = "🔗 Bot needs 'Invite Users via Link' permission to invite assistant."
-call_2 = "⛔ <b>Assistant Banned</b>\n\n<b>ID:</b> <code>{1}</code>\n<b>Name:</b> {2}\n<b>Username:</b> @{3}\n\nPlease unban the assistant."
-call_3 = "❌ Failed to invite {0} assistant.\n\nReason: <code>{1}</code>"
-call_4 = "⏳ Inviting {0} assistant to your chat..."
-call_5 = "✅ {0} assistant joined successfully!\n\nStarting stream..."
-call_6 = "🔄 Failed to switch stream. Use /skip to change track."
-call_7 = "⏬ Downloading next track from queue..."
-call_8 = "🔍 No active videochat found. Please start one first."
-call_9 = "🤖 Assistant already in videochat.\n\nIf not visible, send /reboot"
-call_10 = "⚠️ Telegram server error. Please try again later."
+call_1: "🔗 Bot needs 'Invite Users via Link' permission to invite assistant."
+call_2: |
+  ⛔ <b>Assistant Banned</b>
+  <b>ID:</b> <code>{1}</code>
+  <b>Name:</b> {2}
+  <b>Username:</b> @{3}
+  Please unban the assistant.
+call_3: |
+  ❌ Failed to invite {0} assistant.
+  Reason: <code>{1}</code>
+call_4: "⏳ Inviting {0} assistant to your chat..."
+call_5: |
+  ✅ {0} assistant joined successfully!
+  Starting stream...
+call_6: "🔄 Failed to switch stream. Use /skip to change track."
+call_7: "⏬ Downloading next track from queue..."
+call_8: "🔍 No active videochat found. Please start one first."
+call_9: "🤖 Assistant already in videochat.\n\nIf not visible, send /reboot"
+call_10: "⚠️ Telegram server error. Please try again later."
 
 # ======================
 # AUTH MESSAGES
 # ======================
-auth_1 = "🔐 Max 25 authorized users per group."
-auth_2 = "✅ Added {0} to authorized users."
-auth_3 = "ℹ️ {0} is already authorized."
-auth_4 = "❌ Removed {0} from authorized users."
-auth_5 = "ℹ️ {0} not in authorized list."
-auth_6 = "🔍 Fetching authorized users..."
-auth_7 = "👥 Authorized users in {0}:\n\n"
-auth_8 = "👤 Added by:"
+auth_1: "🔐 Max 25 authorized users per group."
+auth_2: "✅ Added {0} to authorized users."
+auth_3: "ℹ️ {0} is already authorized."
+auth_4: "❌ Removed {0} from authorized users."
+auth_5: "ℹ️ {0} not in authorized list."
+auth_6: "🔍 Fetching authorized users..."
+auth_7: "👥 Authorized users in {0}:\n\n"
+auth_8: "👤 Added by:"
 
 # ======================
 # RELOAD MESSAGES
 # ======================
-reload_1 = "⏳ You can refresh admin cache once every 3 mins.\n\nTry again after {0}."
-reload_2 = "🔄 Admin cache refreshed!"
-reload_3 = "❌ Failed to reload. Ensure bot is admin."
-reload_4 = "🔄 Rebooting {0} for your chat..."
-reload_5 = "✅ Successfully rebooted {0}!\n\nYou can start playing now."
+reload_1: "⏳ You can refresh admin cache once every 3 mins.\n\nTry again after {0}."
+reload_2: "🔄 Admin cache refreshed!"
+reload_3: "❌ Failed to reload. Ensure bot is admin."
+reload_4: "🔄 Rebooting {0} for your chat..."
+reload_5: "✅ Successfully rebooted {0}!\n\nYou can start playing now."
 
 # ======================
 # ADMIN CONTROL MESSAGES
 # ======================
-admin_1 = "ℹ️ The stream is already resumed!"
-admin_2 = "⏸️ Stream paused by {0}"
-admin_3 = "ℹ️ The stream is already paused!"
-admin_4 = "▶️ Stream resumed by {0}"
-admin_5 = "⏹️ Stream stopped by {0}"
-admin_6 = "⏭️ Track skipped by {0}\n\nNo more tracks in {1}, leaving voice chat."
-admin_7 = "❌ Error changing stream to {0}."
-admin_8 = "🔄 Disable loop via /loop disable before skipping."
-admin_9 = "🔢 Use numbers like 1, 2, 3 to skip to specific tracks."
-admin_10 = "⚠️ Need at least 2 tracks for specific skip.\nCheck queue: /queue"
-admin_11 = "⚠️ Not enough tracks for skip position {0}."
-admin_12 = "❌ Failed to skip to track {0}.\nCheck queue: /queue"
-admin_13 = "🔄 Please reload admin cache via /reload"
-admin_14 = "🔒 Only admins can manage voice chats.\nReload cache: /reload"
-admin_15 = "❌ Failed to shuffle queue."
-admin_16 = "🔀 Queue shuffled by {0}.\nCheck queue: /queue"
-admin_17 = "📝 Usage: /loop [enable/disable] or /loop [number]"
-admin_18 = "🔁 Loop enabled for {0} times by {1}."
-admin_19 = "🔁 Loop disabled by {0}."
-admin_20 = "⏩ Usage: /seek or /seekback [seconds]"
-admin_21 = "🔢 Use numbers for seek duration (in seconds)."
-admin_22 = "⏺️ Can't seek live streams."
-admin_23 = "⚠️ Try smaller seek duration.\nPlayed {0} of {1} minutes."
-admin_24 = "⏳ Seeking..."
-admin_25 = "✅ Seeked to {0} minutes by {1}."
-admin_26 = "❌ Seek failed."
-admin_27 = "🎚️ Only YouTube streams support speed control."
-admin_28 = "🎛️ <b>Speed Control Panel</b>\n\nCurrent speed: {0}x"
-admin_29 = "ℹ️ Already at normal speed (1.0x)."
-admin_30 = "⏳ Someone else is adjusting speed..."
-admin_31 = "⚙️ Changing speed..."
-admin_32 = "⏩ Trying to change speed...\nRequested by: {0}"
-admin_33 = "❌ Failed to change speed."
-admin_34 = "✅ Speed changed to {0}x\nRequested by: {1}"
-admin_35 = "🗳️ Voting ended as track finished."
-admin_36 = "❌ Voting not possible - track ended/stopped."
-admin_37 = "✅ Got {0} upvotes."
-admin_38 = "👍 +1 upvote"
-admin_39 = "👎 -1 upvote"
-admin_40 = "✅ Upvoted"
+admin_1: "ℹ️ The stream is already resumed!"
+admin_2: "⏸️ Stream paused by {0}"
+admin_3: "ℹ️ The stream is already paused!"
+admin_4: "▶️ Stream resumed by {0}"
+admin_5: "⏹️ Stream stopped by {0}"
+admin_6: "⏭️ Track skipped by {0}\n\nNo more tracks in {1}, leaving voice chat."
+admin_7: "❌ Error changing stream to {0}."
+admin_8: "🔄 Disable loop via /loop disable before skipping."
+admin_9: "🔢 Use numbers like 1, 2, 3 to skip to specific tracks."
+admin_10: "⚠️ Need at least 2 tracks for specific skip.\nCheck queue: /queue"
+admin_11: "⚠️ Not enough tracks for skip position {0}."
+admin_12: "❌ Failed to skip to track {0}.\nCheck queue: /queue"
+admin_13: "🔄 Please reload admin cache via /reload"
+admin_14: "🔒 Only admins can manage voice chats.\nReload cache: /reload"
+admin_15: "❌ Failed to shuffle queue."
+admin_16: "🔀 Queue shuffled by {0}.\nCheck queue: /queue"
+admin_17: "📝 Usage: /loop [enable/disable] or /loop [number]"
+admin_18: "🔁 Loop enabled for {0} times by {1}."
+admin_19: "🔁 Loop disabled by {0}."
+admin_20: "⏩ Usage: /seek or /seekback [seconds]"
+admin_21: "🔢 Use numbers for seek duration (in seconds)."
+admin_22: "⏺️ Can't seek live streams."
+admin_23: "⚠️ Try smaller seek duration.\nPlayed {0} of {1} minutes."
+admin_24: "⏳ Seeking..."
+admin_25: "✅ Seeked to {0} minutes by {1}."
+admin_26: "❌ Seek failed."
+admin_27: "🎚️ Only YouTube streams support speed control."
+admin_28: "🎛️ <b>Speed Control Panel</b>\n\nCurrent speed: {0}x"
+admin_29: "ℹ️ Already at normal speed (1.0x)."
+admin_30: "⏳ Someone else is adjusting speed..."
+admin_31: "⚙️ Changing speed..."
+admin_32: "⏩ Trying to change speed...\nRequested by: {0}"
+admin_33: "❌ Failed to change speed."
+admin_34: "✅ Speed changed to {0}x\nRequested by: {1}"
+admin_35: "🗳️ Voting ended as track finished."
+admin_36: "❌ Voting not possible - track ended/stopped."
+admin_37: "✅ Got {0} upvotes."
+admin_38: "👍 +1 upvote"
+admin_39: "👎 -1 upvote"
+admin_40: "✅ Upvoted"
 
 # ======================
 # START MESSAGES
 # ======================
-start_1 = "🤖 {0} is alive!\n\n⏳ Uptime: {1}"
-start_2 = """🎵 <b>Music Bot Features</b>
-
-• High quality audio streaming
-• YouTube/Spotify support  
-• Playlist management
-• Multi-language support
-• 24/7 online
-• And much more!
-
-Use buttons below to explore."""
-start_3 = "👋 Hi {0}, I'm {1}\n\nThanks for adding me to {2}! I can now play music here."
-start_4 = "🔊 <b>Supergroup Required</b>\n\nConvert your group to supergroup to use music features."
-start_5 = "🚫 <b>Blacklisted Chat</b>\n\nThis chat is blacklisted. Contact support."
-start_6 = """🎵 <b>Track Info</b>
-
-📌 <b>Title:</b> {0}
-⏳ <b>Duration:</b> {1} mins
-👀 <b>Views:</b> {2}
-📅 <b>Published:</b> {3}
-🔗 <b>Channel:</b> {4}
-
-<b>Powered by {5}</b>"""
+start_1: "🤖 {0} is alive!\n\n⏳ Uptime: {1}"
+start_2: |
+  🎵 <b>Music Bot Features</b>
+  
+  • High quality audio streaming
+  • YouTube/Spotify support
+  • Playlist management
+  • Multi-language support
+  • 24/7 online
+  • And much more!
+  
+  Use buttons below to explore.
+start_3: |
+  👋 Hi {0}, I'm {1}
+  
+  Thanks for adding me to {2}! I can now play music here.
+start_4: |
+  🔊 <b>Supergroup Required</b>
+  
+  Convert your group to supergroup to use music features.
+start_5: |
+  🚫 <b>Blacklisted Chat</b>
+  
+  This chat is blacklisted. Contact support.
+start_6: |
+  🎵 <b>Track Info</b>
+  
+  📌 <b>Title:</b> {0}
+  ⏳ <b>Duration:</b> {1} mins
+  👀 <b>Views:</b> {2}
+  📅 <b>Published:</b> {3}
+  🔗 <b>Channel:</b> {4}
+  
+  <b>Powered by {5}</b>
 
 # ======================
 # PLAYLIST MESSAGES
 # ======================
-playlist_1 = "🎶 Usage: /play [song name or YouTube link]\n\nTo play from server playlists:"
-playlist_2 = "🔍 Fetching your playlist..."
-playlist_3 = "😕 You don't have any saved playlists."
-playlist_4 = "📋 Your Playlist:\n\n"
-playlist_5 = "⏳ Duration: {0} mins"
-playlist_6 = "📩 Contact me in PM to delete playlists."
-playlist_7 = "🎵 Tracks: {0}\n\nUse buttons to manage:"
-playlist_8 = "ℹ️ Track already exists in playlist."
-playlist_9 = "⚠️ Max {0} tracks per playlist."
-playlist_10 = "✅ Added to playlist:\n{0}"
-playlist_11 = "🗑️ Track deleted."
-playlist_12 = "❌ Failed to delete track."
-playlist_13 = "🧹 Playlist cleared!"
-playlist_14 = "⚠️ <b>Delete entire playlist?</b>\n\nThis cannot be undone!"
-playlist_15 = "[View Full Playlist]({0})"
-playlist_16 = "Queued Playlist:"
-playlist_17 = "Position -"
-playlist_18 = "➕ Added {0} tracks to queue: [View]({1})"
+playlist_1: "🎶 Usage: /play [song name or YouTube link]\n\nTo play from server playlists:"
+playlist_2: "🔍 Fetching your playlist..."
+playlist_3: "😕 You don't have any saved playlists."
+playlist_4: "📋 Your Playlist:\n\n"
+playlist_5: "⏳ Duration: {0} mins"
+playlist_6: "📩 Contact me in PM to delete playlists."
+playlist_7: "🎵 Tracks: {0}\n\nUse buttons to manage:"
+playlist_8: "ℹ️ Track already exists in playlist."
+playlist_9: "⚠️ Max {0} tracks per playlist."
+playlist_10: "✅ Added to playlist:\n{0}"
+playlist_11: "🗑️ Track deleted."
+playlist_12: "❌ Failed to delete track."
+playlist_13: "🧹 Playlist cleared!"
+playlist_14: "⚠️ <b>Delete entire playlist?</b>\n\nThis cannot be undone!"
+playlist_15: "[View Full Playlist]({0})"
+playlist_16: "Queued Playlist:"
+playlist_17: "Position -"
+playlist_18: "➕ Added {0} tracks to queue: [View]({1})"
 
 # ======================
 # LANGUAGE MESSAGES
 # ======================
-lang_1 = "🌍 Choose default group language:"
-lang_2 = "✅ Language changed!"
-lang_3 = "❌ Failed to change language."
-lang_4 = "ℹ️ Already using this language."
+lang_1: "🌍 Choose default group language:"
+lang_2: "✅ Language changed!"
+lang_3: "❌ Failed to change language."
+lang_4: "ℹ️ Already using this language."
 
 # ======================
 # LYRICS MESSAGES
 # ======================
-lyrics_1 = "🎤 Usage: /lyrics [song name]"
-lyrics_2 = "🔍 Searching lyrics..."
-lyrics_3 = "❌ Couldn't find lyrics for: {0}"
-lyrics_4 = "📝 Get lyrics without spam:"
+lyrics_1: "🎤 Usage: /lyrics [song name]"
+lyrics_2: "🔍 Searching lyrics..."
+lyrics_3: "❌ Couldn't find lyrics for: {0}"
+lyrics_4: "📝 Get lyrics without spam:"
 
 # ======================
 # SETTINGS MESSAGES
 # ======================
-setting_1 = "⚙️ <b>Settings Panel</b>\n\n<b>Chat ID:</b> <code>{1}</code>\n<b>Title:</b> {2}"
-setting_2 = "🔍 <b>Search Mode</b>\n\n• Direct: Plays immediately\n• Inline: Shows options"
-setting_3 = "👮 <b>Admin Commands</b>\n\n• Everyone: All can use\n• Admins Only: Restricted"
-setting_4 = "😕 No authorized users found."
-setting_5 = "🎧 <b>Play Mode</b>\n\n• Group: Plays here\n• Channel: Plays in linked channel"
-setting_6 = "🎵 <b>Play Permissions</b>\n\n• Everyone: All can play\n• Admins Only: Restricted"
-setting_7 = "ℹ️ Set channel ID via /channelplay"
-setting_8 = "🗳️ <b>Voting Mode</b>\n\nNon-admins can use commands after getting votes."
-setting_9 = "📊 Current votes required: {0}"
-setting_10 = "🔴 Voting mode disabled."
-setting_11 = "⚠️ Minimum 2 votes required."
-setting_12 = "⚠️ Maximum 15 votes allowed."
+setting_1: "⚙️ <b>Settings Panel</b>\n\n<b>Chat ID:</b> <code>{1}</code>\n<b>Title:</b> {2}"
+setting_2: "🔍 <b>Search Mode</b>\n\n• Direct: Plays immediately\n• Inline: Shows options"
+setting_3: "👮 <b>Admin Commands</b>\n\n• Everyone: All can use\n• Admins Only: Restricted"
+setting_4: "😕 No authorized users found."
+setting_5: "🎧 <b>Play Mode</b>\n\n• Group: Plays here\n• Channel: Plays in linked channel"
+setting_6: "🎵 <b>Play Permissions</b>\n\n• Everyone: All can play\n• Admins Only: Restricted"
+setting_7: "ℹ️ Set channel ID via /channelplay"
+setting_8: "🗳️ <b>Voting Mode</b>\n\nNon-admins can use commands after getting votes."
+setting_9: "📊 Current votes required: {0}"
+setting_10: "🔴 Voting mode disabled."
+setting_11: "⚠️ Minimum 2 votes required."
+setting_12: "⚠️ Maximum 15 votes allowed."
 
 # ======================
 # BUTTON TEXTS
 # ======================
-CLOSE_BUTTON = "❌ Close"
-BACK_BUTTON = "🔙 Back"
-UNBAN_BUTTON = "🔓 Unban"
+CLOSE_BUTTON: "❌ Close"
+BACK_BUTTON: "🔙 Back"
+UNBAN_BUTTON: "🔓 Unban"
 
 # Lyrics
-L_B_1 = "📜 Get Lyrics"
+L_B_1: "📜 Get Lyrics"
 
 # Playlist
-PL_B_1 = "🎶 Playlists"
-PL_B_2 = "📋 My Playlists"
-PL_B_3 = "📝 Menu"
-PL_B_4 = "🎧 Play Mode"
-PL_B_5 = "🗑️ Clear All"
-PL_B_6 = "🚮 Delete"
-PL_B_7 = "✅ Confirm Delete"
-PL_B_8 = "🔢 Top 10"
-PL_B_9 = "🌍 Global Top"
-PL_B_10 = "👥 Group Top"
-PL_B_11 = "💖 My Top"
+PL_B_1: "🎶 Playlists"
+PL_B_2: "📋 My Playlists"
+PL_B_3: "📝 Menu"
+PL_B_4: "🎧 Play Mode"
+PL_B_5: "🗑️ Clear All"
+PL_B_6: "🚮 Delete"
+PL_B_7: "✅ Confirm Delete"
+PL_B_8: "🔢 Top 10"
+PL_B_9: "🌍 Global Top"
+PL_B_10: "👥 Group Top"
+PL_B_11: "💖 My Top"
 
 # Song
-SG_B_1 = "🔗 Open"
-SG_B_2 = "🎧 Audio"
-SG_B_3 = "🎥 Video"
+SG_B_1: "🔗 Open"
+SG_B_2: "🎧 Audio"
+SG_B_3: "🎥 Video"
 
 # Start
-S_B_1 = "➕ Add Me"
-S_B_2 = "🆘 Support"
-S_B_3 = "👥 Add to Group"
-S_B_4 = "❓ Help"
-S_B_5 = "👑 Owner"
-S_B_6 = "📢 Channel"
-S_B_8 = "▶️ YouTube"
-S_B_9 = "💬 Support"
+S_B_1: "➕ Add Me"
+S_B_2: "🆘 Support"
+S_B_3: "👥 Add to Group"
+S_B_4: "❓ Help"
+S_B_5: "👑 Owner"
+S_B_6: "📢 Channel"
+S_B_8: "▶️ YouTube"
+S_B_9: "💬 Support"
 
 # Help
-H_B_1 = "🛡️ Admin"
-H_B_2 = "🔐 Auth"
-H_B_3 = "📢 Broadcast"
-H_B_4 = "🚫 BL Chats"
-H_B_5 = "🚫 BL Users"
-H_B_6 = "🎧 Channel Play"
-H_B_7 = "🌐 GBan"
-H_B_8 = "🔁 Loop"
-H_B_9 = "🛠️ Maintenance"
-H_B_10 = "⏱️ Ping"
-H_B_11 = "🎵 Play"
-H_B_12 = "🔀 Shuffle"
-H_B_13 = "⏩ Seek"
-H_B_14 = "🎤 Song"
-H_B_15 = "🎚️ Speed"
+H_B_1: "🛡️ Admin"
+H_B_2: "🔐 Auth"
+H_B_3: "📢 Broadcast"
+H_B_4: "🚫 BL Chats"
+H_B_5: "🚫 BL Users"
+H_B_6: "🎧 Channel Play"
+H_B_7: "🌐 GBan"
+H_B_8: "🔁 Loop"
+H_B_9: "🛠️ Maintenance"
+H_B_10: "⏱️ Ping"
+H_B_11: "🎵 Play"
+H_B_12: "🔀 Shuffle"
+H_B_13: "⏩ Seek"
+H_B_14: "🎤 Song"
+H_B_15: "🎚️ Speed"
 
 # Play
-P_B_1 = "🎧 Audio"
-P_B_2 = "🎥 Video"
-P_B_3 = "🔴 Live"
-P_B_4 = "🎵 Normal"
+P_B_1: "🎧 Audio"
+P_B_2: "🎥 Video"
+P_B_3: "🔴 Live"
+P_B_4: "🎵 Normal"
 
 # Settings
-ST_B_1 = "👤 Auth Users"
-ST_B_2 = "🎧 Play Mode"
-ST_B_3 = "🌐 Language"
-ST_B_4 = "🗳️ Voting"
-ST_B_5 = "✅ On"
-ST_B_6 = "❌ Off"
-ST_B_7 = "👥 Auth Users ➜"
-ST_B_8 = "👮 Admins"
-ST_B_9 = "👥 Everyone"
-ST_B_10 = "🔍 Search ➜"
-ST_B_11 = "⚡ Direct"
-ST_B_12 = "🔄 Inline"
-ST_B_13 = "🛡️ Admin Cmds ➜"
-ST_B_14 = "🎵 Play Type ➜"
+ST_B_1: "👤 Auth Users"
+ST_B_2: "🎧 Play Mode"
+ST_B_3: "🌐 Language"
+ST_B_4: "🗳️ Voting"
+ST_B_5: "✅ On"
+ST_B_6: "❌ Off"
+ST_B_7: "👥 Auth Users ➜"
+ST_B_8: "👮 Admins"
+ST_B_9: "👥 Everyone"
+ST_B_10: "🔍 Search ➜"
+ST_B_11: "⚡ Direct"
+ST_B_12: "🔄 Inline"
+ST_B_13: "🛡️ Admin Cmds ➜"
+ST_B_14: "🎵 Play Type ➜"
 
 # Stats
-SA_B_1 = "📊 Overall Stats"
-SA_B_2 = "☁️ General"
-SA_B_3 = "📈 Detailed"
+SA_B_1: "📊 Overall Stats"
+SA_B_2: "☁️ General"
+SA_B_3: "📈 Detailed"
 
 # Queue
-QU_B_1 = "🎵 Queue"
-QU_B_2 = "{0} —————————— {1}"
+QU_B_1: "🎵 Queue"
+QU_B_2: "{0} —————————— {1}"
 
 # Sudo
-sudo_1 = "ℹ️ {0} is already sudo."
-sudo_2 = "✅ Added {0} to sudo."
-sudo_3 = "ℹ️ {0} not in sudo list."
-sudo_4 = "❌ Removed {0} from sudo."
-sudo_5 = "<b>👑 Owner:</b>\n"
-sudo_6 = "\n<b>🌟 Sudo Users:</b>\n"
-sudo_7 = "😕 No sudo users."
-sudo_8 = "❌ Failed."
+sudo_1: "ℹ️ {0} is already sudo."
+sudo_2: "✅ Added {0} to sudo."
+sudo_3: "ℹ️ {0} not in sudo list."
+sudo_4: "❌ Removed {0} from sudo."
+sudo_5: "<b>👑 Owner:</b>\n"
+sudo_6: "\n<b>🌟 Sudo Users:</b>\n"
+sudo_7: "😕 No sudo users."
+sudo_8: "❌ Failed."
 
 # Block
-block_1 = "ℹ️ {0} already blocked."
-block_2 = "🚫 Blocked {0}."
-block_3 = "ℹ️ {0} not blocked."
-block_4 = "✅ Unblocked {0}."
-block_5 = "😕 No blocked users."
-block_6 = "🔍 Fetching blocked users..."
-block_7 = "<b>🚫 Blocked Users:</b>\n\n"
+block_1: "ℹ️ {0} already blocked."
+block_2: "🚫 Blocked {0}."
+block_3: "ℹ️ {0} not blocked."
+block_4: "✅ Unblocked {0}."
+block_5: "😕 No blocked users."
+block_6: "🔍 Fetching blocked users..."
+block_7: "<b>🚫 Blocked Users:</b>\n\n"
 
 # Blacklist
-black_1 = "📝 Usage: /blacklistchat [chat_id]"
-black_2 = "ℹ️ Chat already blacklisted."
-black_3 = "✅ Chat blacklisted."
-black_4 = "📝 Usage: /whitelistchat [chat_id]"
-black_5 = "ℹ️ Chat not blacklisted."
-black_6 = "✅ Chat whitelisted."
+black_1: "📝 Usage: /blacklistchat [chat_id]"
+black_2: "ℹ️ Chat already blacklisted."
+black_3: "✅ Chat blacklisted."
+black_4: "📝 Usage: /whitelistchat [chat_id]"
+black_5: "ℹ️ Chat not blacklisted."
+black_6: "✅ Chat whitelisted."

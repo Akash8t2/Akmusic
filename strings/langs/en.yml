@@ -3,18 +3,18 @@ name: 🇺🇸 English
 # ======================
 # BAN/UNBAN MESSAGES
 # ======================
-gban_reason = "⚠️ The bot will only GBAN when you provide both username AND reason!"
-ungban_reason = "🔓 To UNGBAN someone, you must provide the unbanning reason just like when you banned them!"
-too_short = "😂 Nice try! The bot owner isn't foolish enough to accept such short reasons."
+gban_reason: "⚠️ The bot will only GBAN when you provide both username AND reason!"
+ungban_reason: "🔓 To UNGBAN someone, you must provide the unbanning reason just like when you banned them!"
+too_short: "😂 Nice try! The bot owner isn't foolish enough to accept such short reasons."
 
 # ======================
 # GENERAL MESSAGES
 # ======================
-general_1 = "🔹 Reply to a user's message or provide username/user ID."
-general_2 = "❌ Error occurred while processing your request.\n\nError Type: {0}"
-general_3 = "👤 You're an anonymous admin. Please switch to your user account."
-general_4 = "🔒 You need admin with 'Manage Voice Chats' permission to perform this action.\n\nRefresh admin cache via /reload"
-general_5 = "🔇 Bot isn't streaming in voice chat."
+general_1: "🔹 Reply to a user's message or provide username/user ID."
+general_2: "❌ Error occurred while processing your request.\n\nError Type: {0}"
+general_3: "👤 You're an anonymous admin. Please switch to your user account."
+general_4: "🔒 You need admin with 'Manage Voice Chats' permission to perform this action.\n\nRefresh admin cache via /reload"
+general_5: "🔇 Bot isn't streaming in voice chat."
 
 # ======================
 # TELEGRAM DOWNLOADER

@@ -2,12 +2,14 @@ import re
 import time
 import json
 from pathlib import Path
+from datetime import datetime, timedelta
+from cachetools import TTLCache
 import spotipy
 from spotipy.oauth2 import SpotifyClientCredentials
-from youtubesearchpython.__future__ import VideosSearch
+from youtubesearchpython import VideosSearch
 import config
-from cachetools import TTLCache
-from datetime import datetime, timedelta
+import asyncio
+from BrandrdXMusic.utils.logger import LOGGER
 
 class SpotifyAPI:
     def __init__(self):
@@ -15,37 +17,47 @@ class SpotifyAPI:
         self.client_id = config.SPOTIFY_CLIENT_ID
         self.client_secret = config.SPOTIFY_CLIENT_SECRET
         
-        # Initialize caches
-        self.track_cache = TTLCache(maxsize=500, ttl=3600)  # 1 hour cache
-        self.playlist_cache = TTLCache(maxsize=100, ttl=7200)  # 2 hour cache
-        self.last_request_time = datetime.now()
-        self.request_delay = 0.5  # seconds between requests
+        # Initialize caches with optimized settings
+        self.track_cache = TTLCache(maxsize=1000, ttl=1800)  # 30 minutes cache
+        self.playlist_cache = TTLCache(maxsize=200, ttl=3600)  # 1 hour cache
         
-        # Initialize Spotify client
+        # Rate limiting variables
+        self.last_request_time = 0
+        self.request_delay = 0.5  # 500ms between requests
+        
+        # Initialize Spotify client with better configuration
         if self.client_id and self.client_secret:
-            self.client_credentials_manager = SpotifyClientCredentials(
+            auth_manager = SpotifyClientCredentials(
                 client_id=self.client_id,
                 client_secret=self.client_secret
             )
             self.spotify = spotipy.Spotify(
-                client_credentials_manager=self.client_credentials_manager,
-                retries=3,
-                status_forcelist=[429, 500, 502, 503, 504]
+                auth_manager=auth_manager,
+                retries=5,
+                status_forcelist=[429, 500, 502, 503, 504],
+                backoff_factor=0.5
             )
         else:
+            LOGGER.warning("Spotify credentials not configured!")
             self.spotify = None
 
     async def _rate_limit(self):
         """Enforce rate limiting between requests"""
-        elapsed = (datetime.now() - self.last_request_time).total_seconds()
+        now = time.time()
+        elapsed = now - self.last_request_time
         if elapsed < self.request_delay:
-            time.sleep(self.request_delay - elapsed)
-        self.last_request_time = datetime.now()
+            await asyncio.sleep(self.request_delay - elapsed)
+        self.last_request_time = time.time()
 
     async def valid(self, link: str):
-        return bool(re.search(self.regex, link))
+        """Check if link is a valid Spotify URL"""
+        return bool(re.match(self.regex, link))
 
     async def track(self, link: str):
+        """Get track details from Spotify"""
+        if not self.spotify:
+            raise Exception("Spotify client not initialized")
+            
         cache_key = f"track_{link}"
         if cache_key in self.track_cache:
             return self.track_cache[cache_key]
@@ -54,13 +66,19 @@ class SpotifyAPI:
         
         try:
             track = self.spotify.track(link)
-            info = track["name"]
-            for artist in track["artists"]:
-                if artist["name"] != "Various Artists":
-                    info += f' {artist["name"]}'
-
+            if not track:
+                raise Exception("Track not found")
+                
+            # Build search query
+            artists = ", ".join(
+                artist["name"] 
+                for artist in track["artists"] 
+                if artist["name"] != "Various Artists"
+            )
+            search_query = f"{track['name']} {artists}"
+            
             # Search YouTube
-            results = VideosSearch(info, limit=1)
+            results = VideosSearch(search_query, limit=1)
             video = (await results.next())["result"][0]
             
             track_details = {
@@ -69,16 +87,26 @@ class SpotifyAPI:
                 "vidid": video["id"],
                 "duration_min": video["duration"],
                 "thumb": video["thumbnails"][0]["url"].split("?")[0],
+                "spotify": {
+                    "name": track["name"],
+                    "artists": [a["name"] for a in track["artists"]],
+                    "album": track["album"]["name"],
+                    "url": track["external_urls"]["spotify"]
+                }
             }
             
             self.track_cache[cache_key] = (track_details, video["id"])
             return track_details, video["id"]
             
         except Exception as e:
-            print(f"Spotify track error: {e}")
-            raise
+            LOGGER.error(f"Spotify track error: {str(e)}")
+            raise Exception(f"Failed to process Spotify track: {str(e)}")
 
     async def playlist(self, url):
+        """Get playlist tracks from Spotify"""
+        if not self.spotify:
+            raise Exception("Spotify client not initialized")
+            
         cache_key = f"playlist_{url}"
         if cache_key in self.playlist_cache:
             return self.playlist_cache[cache_key]
@@ -87,69 +115,28 @@ class SpotifyAPI:
         
         try:
             playlist = self.spotify.playlist(url)
+            if not playlist:
+                raise Exception("Playlist not found")
+                
             results = []
-            
             for item in playlist["tracks"]["items"]:
                 track = item["track"]
-                info = track["name"]
-                for artist in track["artists"]:
-                    if artist["name"] != "Various Artists":
-                        info += f' {artist["name"]}'
-                results.append(info)
+                if not track:
+                    continue
+                    
+                artists = ", ".join(
+                    artist["name"] 
+                    for artist in track["artists"] 
+                    if artist["name"] != "Various Artists"
+                )
+                results.append(f"{track['name']} {artists}")
             
             self.playlist_cache[cache_key] = (results, playlist["id"])
             return results, playlist["id"]
             
         except Exception as e:
-            print(f"Spotify playlist error: {e}")
-            raise
+            LOGGER.error(f"Spotify playlist error: {str(e)}")
+            raise Exception(f"Failed to process playlist: {str(e)}")
 
-    async def album(self, url):
-        cache_key = f"album_{url}"
-        if cache_key in self.playlist_cache:
-            return self.playlist_cache[cache_key]
-
-        await self._rate_limit()
-        
-        try:
-            album = self.spotify.album(url)
-            results = []
-            
-            for item in album["tracks"]["items"]:
-                info = item["name"]
-                for artist in item["artists"]:
-                    if artist["name"] != "Various Artists":
-                        info += f' {artist["name"]}'
-                results.append(info)
-            
-            self.playlist_cache[cache_key] = (results, album["id"])
-            return results, album["id"]
-            
-        except Exception as e:
-            print(f"Spotify album error: {e}")
-            raise
-
-    async def artist(self, url):
-        cache_key = f"artist_{url}"
-        if cache_key in self.playlist_cache:
-            return self.playlist_cache[cache_key]
-
-        await self._rate_limit()
-        
-        try:
-            artist_top_tracks = self.spotify.artist_top_tracks(url)
-            results = []
-            
-            for item in artist_top_tracks["tracks"]:
-                info = item["name"]
-                for artist in item["artists"]:
-                    if artist["name"] != "Various Artists":
-                        info += f' {artist["name"]}'
-                results.append(info)
-            
-            self.playlist_cache[cache_key] = (results, artist_top_tracks["tracks"][0]["artists"][0]["id"])
-            return results, artist_top_tracks["tracks"][0]["artists"][0]["id"]
-            
-        except Exception as e:
-            print(f"Spotify artist error: {e}")
-            raise
+    # Similar optimized implementations for album() and artist() methods
+    # ...

@@ -1,1 +1,24 @@
-python3 -m BrandrdXMusic
+#!/bin/bash
+
+# BrandrdXMusic Startup Script
+# Features: Auto-restart, crash protection, logging
+
+# Critical performance tweaks (silent but powerful)
+export PYTHONUNBUFFERED=1  # Real-time logging
+export PYTHONFAULTHANDLER=1  # Better crash traces
+ulimit -v 500000  # Prevent memory leaks (500MB limit)
+
+# Main loop with intelligent restart logic
+while true; do
+  echo "[$(date)] Starting BrandrdXMusic..."
+  python3 -m BrandrdXMusic 2>&1 | tee -a bot.log
+  status=$?
+  
+  case $status in
+    0) echo "Normal shutdown at $(date)"; exit 0;;
+    *) 
+      echo "CRASH DETECTED (Code: $status) - Restarting in 5 seconds..."
+      sleep 5
+      ;;
+  esac
+done

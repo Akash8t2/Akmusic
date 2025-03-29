@@ -1,9 +1,12 @@
 import os
 from PIL import ImageDraw, Image, ImageFont, ImageChops
-from pyrogram import *
-from pyrogram.types import *
+from pyrogram import filters
+from pyrogram.types import ChatMemberUpdated, InlineKeyboardButton, InlineKeyboardMarkup
 from logging import getLogger
 from BrandrdXMusic import app
+
+# लॉग चैनल ID डिफाइन करें
+LOG_CHANNEL_ID = -1001234567890  # अपना असली ID यहाँ डालें
 
 LOGGER = getLogger(__name__)
 

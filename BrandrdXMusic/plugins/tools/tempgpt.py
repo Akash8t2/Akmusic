@@ -24,7 +24,7 @@ chat_history_collection = db["chat_histories"]
 user_last_requests = defaultdict(list)  # For rate limiting
 
 genai.configure(api_key=GEMINI_API_KEY)
-model = genai.GenerativeModel("gemini-pro")
+model = genai.GenerativeModel("gemini-1.5-pro-latest")  # Updated model name
 
 # ================= Rate Limiting Decorator =================
 def rate_limit(func):
@@ -53,10 +53,10 @@ def rate_limit(func):
 
 # ================= Clean History for Gemini =================
 def clean_history_for_gemini(mongo_history):
-    """Remove custom fields (like 'time') before sending to Gemini"""
+    """Convert MongoDB history to Gemini-compatible format"""
     return [{
         "role": msg["role"],
-        "parts": msg["parts"]
+        "parts": [{"text": part["text"]} for part in msg["parts"]]
     } for msg in mongo_history]
 
 # ================= Bot Commands =================
@@ -79,21 +79,20 @@ async def ai_chat(bot: app, message: Message):
             "updated_at": datetime.now()
         }
         
-        # Add user message (with timestamp stored separately)
+        # Add user message
         user_data["history"].append({
             "role": "user",
             "parts": [{"text": query}],
-            # Note: 'time' is stored in MongoDB but removed before sending to Gemini
-            "timestamp": datetime.now().isoformat()  
+            "timestamp": datetime.now().isoformat()
         })
 
         try:
-            # Generate response with cleaned history
+            # Generate response with proper model
             chat = model.start_chat(history=clean_history_for_gemini(user_data["history"][-MAX_HISTORY:]))
             response = chat.send_message(query)
             
             if not response.text:
-                return await message.reply_text("🔴 Gemini didn't return a valid response")
+                return await message.reply_text("🔴 No response from Gemini")
 
             # Add bot response
             user_data["history"].append({
@@ -116,15 +115,18 @@ async def ai_chat(bot: app, message: Message):
             await message.reply_text(response.text[:4000], parse_mode=ParseMode.MARKDOWN)
 
         except Exception as e:
-            if "blocked" in str(e).lower():
-                await message.reply_text("🚫 This query violates safety guidelines")
+            if "blocked" in str(e).lower() or "safety" in str(e).lower():
+                await message.reply_text("🚫 This query was blocked by safety filters")
+            elif "404" in str(e):
+                await message.reply_text("🔧 Bot is updating, try again later")
+                print(f"Model error: {e}")  # Log for debugging
             else:
-                await message.reply_text(f"⚠️ Gemini Error: {str(e)}")
+                await message.reply_text(f"⚠️ Error: {str(e)[:200]}")
 
     except FloodWait as e:
-        await message.reply_text(f"⏳ Please wait {e.value} seconds (flood control)")
+        await message.reply_text(f"⏳ Please wait {e.value} seconds")
     except Exception as e:
-        await message.reply_text(f"⚠️ Bot Error: {str(e)}")
+        await message.reply_text(f"⚠️ System error: {str(e)[:200]}")
 
 # ================= Other Commands =================
 @app.on_message(filters.command(["clearchat", "resetai"]))
@@ -133,23 +135,8 @@ async def clear_history(bot: app, message: Message):
     chat_history_collection.delete_one({"user_id": user_id})
     await message.reply_text("🧹 Chat history cleared!")
 
-@app.on_message(filters.command("history"))
-async def show_history(bot: app, message: Message):
-    user_id = message.from_user.id
-    user_data = chat_history_collection.find_one({"user_id": user_id})
-    
-    if not user_data or not user_data.get("history"):
-        return await message.reply_text("📭 No chat history found")
-    
-    history_text = "📜 Your Last 10 Chats:\n\n"
-    for msg in user_data["history"][-MAX_HISTORY:]:
-        prefix = "👤 You: " if msg["role"] == "user" else "🤖 Bot: "
-        history_text += f"{prefix}{msg['parts'][0]['text'][:50]}...\n"
-    
-    await message.reply_text(history_text)
-
-# ================= TTL Index for Auto-Cleanup =================
+# ================= TTL Index =================
 chat_history_collection.create_index(
     "updated_at", 
     expireAfterSeconds=30*24*60*60  # Auto-delete after 30 days
-            )
+)

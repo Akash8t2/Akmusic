@@ -8,6 +8,7 @@ from pyrogram.types import Message
 from pymongo import MongoClient
 from datetime import datetime, timedelta
 from collections import defaultdict
+from BrandrdXMusic import app
 
 # ================= CONFIGURATION =================
 GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "AIzaSyASzHWkz__U3vfRtt-VyToX5vvzzYg7Ipg")

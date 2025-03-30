@@ -61,3 +61,4 @@ moviepy
 lyricsgenius
 lexica-api
 cachetools
+google

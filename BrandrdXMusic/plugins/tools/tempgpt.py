@@ -4,7 +4,7 @@ from pyrogram.enums import ChatAction, ParseMode
 from pyrogram import filters
 
 # Google Gemini API Key
-GEMINI_API_KEY = "your-api-key-here"
+GEMINI_API_KEY = "AIzaSyASzHWkz__U3vfRtt-VyToX5vvzzYg7Ipg"
 
 # API Key Set karein
 genai.configure(api_key=GEMINI_API_KEY)

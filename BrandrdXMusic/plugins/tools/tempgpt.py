@@ -51,9 +51,17 @@ def rate_limit(func):
         return await func(client, message)
     return wrapper
 
+# ================= Clean History for Gemini =================
+def clean_history_for_gemini(mongo_history):
+    """Remove custom fields (like 'time') before sending to Gemini"""
+    return [{
+        "role": msg["role"],
+        "parts": msg["parts"]
+    } for msg in mongo_history]
+
 # ================= Bot Commands =================
 @app.on_message(filters.command(["ai", "ask", "gemini"], prefixes=["/", "!", "."]))
-@rate_limit  # Apply rate limiting
+@rate_limit
 async def ai_chat(bot: app, message: Message):
     try:
         await bot.send_chat_action(message.chat.id, ChatAction.TYPING)
@@ -65,18 +73,23 @@ async def ai_chat(bot: app, message: Message):
         query = message.text.split(maxsplit=1)[1]
         
         # Get/Initialize user history
-        user_data = chat_history_collection.find_one({"user_id": user_id}) or {"user_id": user_id, "history": []}
+        user_data = chat_history_collection.find_one({"user_id": user_id}) or {
+            "user_id": user_id,
+            "history": [],
+            "updated_at": datetime.now()
+        }
         
-        # Add user message
+        # Add user message (with timestamp stored separately)
         user_data["history"].append({
             "role": "user",
             "parts": [{"text": query}],
-            "time": datetime.now()
+            # Note: 'time' is stored in MongoDB but removed before sending to Gemini
+            "timestamp": datetime.now().isoformat()  
         })
 
         try:
-            # Generate response
-            chat = model.start_chat(history=user_data["history"][-MAX_HISTORY:])
+            # Generate response with cleaned history
+            chat = model.start_chat(history=clean_history_for_gemini(user_data["history"][-MAX_HISTORY:]))
             response = chat.send_message(query)
             
             if not response.text:
@@ -86,13 +99,17 @@ async def ai_chat(bot: app, message: Message):
             user_data["history"].append({
                 "role": "model",
                 "parts": [{"text": response.text}],
-                "time": datetime.now()
+                "timestamp": datetime.now().isoformat()
             })
+            user_data["updated_at"] = datetime.now()
 
             # Update database
             chat_history_collection.update_one(
                 {"user_id": user_id},
-                {"$set": {"history": user_data["history"][-MAX_HISTORY:]}},
+                {"$set": {
+                    "history": user_data["history"][-MAX_HISTORY:],
+                    "updated_at": user_data["updated_at"]
+                }},
                 upsert=True
             )
 
@@ -109,4 +126,30 @@ async def ai_chat(bot: app, message: Message):
     except Exception as e:
         await message.reply_text(f"⚠️ Bot Error: {str(e)}")
 
-# ... (rest of your commands remain the same)
+# ================= Other Commands =================
+@app.on_message(filters.command(["clearchat", "resetai"]))
+async def clear_history(bot: app, message: Message):
+    user_id = message.from_user.id
+    chat_history_collection.delete_one({"user_id": user_id})
+    await message.reply_text("🧹 Chat history cleared!")
+
+@app.on_message(filters.command("history"))
+async def show_history(bot: app, message: Message):
+    user_id = message.from_user.id
+    user_data = chat_history_collection.find_one({"user_id": user_id})
+    
+    if not user_data or not user_data.get("history"):
+        return await message.reply_text("📭 No chat history found")
+    
+    history_text = "📜 Your Last 10 Chats:\n\n"
+    for msg in user_data["history"][-MAX_HISTORY:]:
+        prefix = "👤 You: " if msg["role"] == "user" else "🤖 Bot: "
+        history_text += f"{prefix}{msg['parts'][0]['text'][:50]}...\n"
+    
+    await message.reply_text(history_text)
+
+# ================= TTL Index for Auto-Cleanup =================
+chat_history_collection.create_index(
+    "updated_at", 
+    expireAfterSeconds=30*24*60*60  # Auto-delete after 30 days
+            )

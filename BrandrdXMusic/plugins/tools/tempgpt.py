@@ -1,36 +1,31 @@
+import os
 import google.generativeai as genai
-from BrandrdXMusic import app
-from pyrogram.enums import ChatAction, ParseMode
-from pyrogram import filters
+from dotenv import load_dotenv
 
-# Google Gemini API Key
-GEMINI_API_KEY = "AIzaSyASzHWkz__U3vfRtt-VyToX5vvzzYg7Ipg"
+# ✅ Environment Variable Load Karein (Agar .env File Use Kar Rahe Hain)
+load_dotenv()
 
-# API Key Set karein
-genai.configure(api_key=GEMINI_API_KEY)
+# ✅ API Key Set Karein
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY")
 
-@app.on_message(filters.command(["gemini", "ai", "ask"], prefixes=[".", "/", "!"]))
-async def chat_gemini(bot, message):
+if not GEMINI_API_KEY:
+    raise ValueError("❌ API key missing! Please set GEMINI_API_KEY in .env or environment variables.")
+
+genai.configure(api_key=AIzaSyASzHWkz__U3vfRtt-VyToX5vvzzYg7Ipg)
+
+# ✅ Correct Model Select Karein
+model = genai.GenerativeModel("gemini-2.0-flash")  # Ya "gemini-2.5-pro-exp-03-25"
+
+def ask_gemini(prompt):
+    """Gemini AI se response lene ka function"""
     try:
-        await bot.send_chat_action(message.chat.id, ChatAction.TYPING)
-
-        if len(message.command) < 2:
-            await message.reply_text("❌ **Please provide a question!**")
-            return
-
-        query = message.text.split(' ', 1)[1]
-
-        # Gemini API se response lena
-        model = genai.GenerativeModel("gemini-pro")
-        response = model.generate_content(query)
-
-        # Response send karein
-        if response and hasattr(response, "text"):
-            result_text = response.text
-        else:
-            result_text = "⚠️ API ne koi valid response nahi diya."
-
-        await message.reply_text(result_text, parse_mode=ParseMode.MARKDOWN)
-
+        response = model.generate_content(prompt)
+        return response.text
     except Exception as e:
-        await message.reply_text(f"❌ **Error:** `{e}`")
+        return f"❌ Error: {str(e)}"
+
+# ✅ Test Query
+if __name__ == "__main__":
+    user_input = input("Enter your question: ")
+    print("\n🤖 Gemini's Response:\n")
+    print(ask_gemini(user_input))

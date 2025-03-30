@@ -5,7 +5,6 @@ import asyncio
 from pyrogram import filters, enums
 from pyrogram.enums import ChatAction, ParseMode
 from pyrogram.types import Message
-from BrandrdXMusic import app
 from pymongo import MongoClient
 from datetime import datetime, timedelta
 from collections import defaultdict
@@ -20,12 +19,19 @@ RATE_LIMIT_PERIOD = 15
 OWNER_ID = 5397621246
 ADMINS = [OWNER_ID, 7819525628]
 
-# Initialize Gemini only if API key exists
+# Connection lock for thread safety
+connection_lock = asyncio.Lock()
+user_last_requests = defaultdict(list)
+
+# Initialize Gemini
 if GEMINI_API_KEY != "your_api_key_here":
     try:
         import google.generativeai as genai
         genai.configure(api_key=GEMINI_API_KEY)
-        model = genai.GenerativeModel("gemini-1.5-flash")
+        model = genai.GenerativeModel(
+            "gemini-1.5-flash",
+            generation_config={"max_output_tokens": 500}
+        )
         gemini_available = True
     except Exception as e:
         print(f"⚠️ Gemini init error: {e}")
@@ -33,9 +39,10 @@ if GEMINI_API_KEY != "your_api_key_here":
 else:
     gemini_available = False
 
-# ================= PERSONA CONFIG =================
+# ================= ENHANCED PERSONA =================
 PERSONA = {
     "name": "Priya",
+    "mood": random.choice(["friendly", "sweet", "playful"]),
     "emoji": random.choice(["🌸", "💖", "✨", "🥀"]),
     "responses": {
         "greeting": [
@@ -50,63 +57,76 @@ PERSONA = {
             "Aaj mera mood achha hai! {}",
             "Kuch interesting batao na... {}"
         ]
-    }
+    },
+    "fallbacks": [
+        "Hmm...thoda time do {}",
+        "Abhi busy hun...baad mein? {}"
+    ]
 }
 
 # ================= DATABASE SETUP =================
-mongo_client = MongoClient(MONGO_URI)
-db = mongo_client["gemini_bot_db"]
+mongo_client = MongoClient(
+    MONGO_URI,
+    maxPoolSize=50,
+    connectTimeoutMS=30000,
+    socketTimeoutMS=30000
+)
+db = mongo_client["music_ai_bot"]
 chat_history = db["chat_history"]
 group_memory = db["group_memory"]
 
-# ================= HELPER FUNCTIONS =================
-async def get_group_context(chat_id):
-    """Get last 3 minutes of group chat"""
-    cutoff = datetime.now() - timedelta(minutes=GROUP_MEMORY_MINUTES)
-    return list(group_memory.find({
-        "chat_id": chat_id,
-        "timestamp": {"$gt": cutoff}
-    }).sort("timestamp", -1).limit(5))
+# ================= SAFE OPERATIONS =================
+async def safe_send_message(chat_id, text, reply_to=None):
+    """Thread-safe message sending with retry"""
+    async with connection_lock:
+        max_retries = 3
+        for attempt in range(max_retries):
+            try:
+                if reply_to:
+                    return await app.send_message(
+                        chat_id,
+                        text,
+                        reply_to_message_id=reply_to
+                    )
+                return await app.send_message(chat_id, text)
+            except Exception as e:
+                if attempt == max_retries - 1:
+                    print(f"Failed to send after {max_retries} attempts: {e}")
+                await asyncio.sleep(1)
 
-async def store_message(chat_id, user_id, text, is_group=False):
-    """Store message in database"""
-    if is_group:
-        group_memory.insert_one({
-            "chat_id": chat_id,
-            "user_id": user_id,
-            "text": text,
-            "timestamp": datetime.now()
-        })
-    else:
-        chat_history.update_one(
-            {"user_id": user_id},
-            {"$push": {"messages": text}},
-            upsert=True
-        )
-
-def generate_response(message_text):
-    """Generate persona-based response"""
-    if any(word in message_text.lower() for word in ["hi", "hello", "hey"]):
-        return random.choice(PERSONA["responses"]["greeting"]).format(PERSONA["emoji"])
-    elif any(word in message_text.lower() for word in ["bye", "goodbye"]):
-        return random.choice(PERSONA["responses"]["farewell"]).format(PERSONA["emoji"])
-    else:
-        return random.choice(PERSONA["responses"]["casual"]).format(PERSONA["emoji"])
+async def safe_store_message(chat_id, user_id, text, is_group=False):
+    """Safe message storage"""
+    async with connection_lock:
+        try:
+            if is_group:
+                group_memory.insert_one({
+                    "chat_id": chat_id,
+                    "user_id": user_id,
+                    "text": text,
+                    "timestamp": datetime.now()
+                })
+            else:
+                chat_history.update_one(
+                    {"user_id": user_id},
+                    {"$push": {"messages": text}},
+                    upsert=True
+                )
+        except Exception as e:
+            print(f"Database error: {e}")
 
 # ================= MESSAGE HANDLERS =================
 @app.on_message(filters.group & filters.text & ~filters.command(["start", "help", "ai"]))
 async def handle_group_message(bot: app, message: Message):
-    """Handle group messages with 30% response chance"""
+    """Handle group messages safely"""
     try:
-        # Store message
-        await store_message(
+        await safe_store_message(
             message.chat.id,
             message.from_user.id,
             message.text,
             is_group=True
         )
 
-        # 30% response chance with 2-minute cooldown
+        # 30% response chance with cooldown
         last_msg = group_memory.find_one(
             {"user_id": message.from_user.id},
             sort=[("timestamp", -1)]
@@ -116,44 +136,55 @@ async def handle_group_message(bot: app, message: Message):
         if random.random() > 0.3:
             return
 
-        # Generate response
+        # Generate and send response
         await bot.send_chat_action(message.chat.id, ChatAction.TYPING)
         await asyncio.sleep(random.uniform(0.5, 1.5))
         response = generate_response(message.text)
-        await message.reply_text(response)
+        await safe_send_message(message.chat.id, response, reply_to=message.id)
 
     except Exception as e:
         print(f"Group chat error: {e}")
 
 @app.on_message(filters.command(["ai", "ask"]))
 async def handle_ai_command(bot: app, message: Message):
-    """Handle AI queries with rate limiting"""
+    """Handle AI queries safely"""
     try:
         if not gemini_available:
-            return await message.reply_text("AI service temporarily unavailable 🌸")
+            fallback = random.choice(PERSONA["fallbacks"]).format(PERSONA["emoji"])
+            return await safe_send_message(message.chat.id, fallback)
 
         query = message.text.split(maxsplit=1)[1] if len(message.text.split()) > 1 else None
         if not query:
-            return await message.reply_text("Please ask something after /ai")
+            return await safe_send_message(message.chat.id, "Kuch to pucho ji? 🥀")
 
         # Rate limiting
-        user_id = message.from_user.id
-        now = time.time()
-        user_requests = [t for t in user_last_requests.get(user_id, []) if now - t < RATE_LIMIT_PERIOD]
-        
-        if len(user_requests) >= RATE_LIMIT:
-            wait_time = RATE_LIMIT_PERIOD - (now - user_requests[0])
-            return await message.reply_text(f"Please wait {int(wait_time)} seconds")
-
-        user_last_requests[user_id] = user_requests + [now]
+        async with connection_lock:
+            user_id = message.from_user.id
+            now = time.time()
+            user_requests = [t for t in user_last_requests.get(user_id, []) if now - t < RATE_LIMIT_PERIOD]
+            
+            if len(user_requests) >= RATE_LIMIT:
+                wait_time = RATE_LIMIT_PERIOD - (now - user_requests[0])
+                return await safe_send_message(
+                    message.chat.id,
+                    f"Please wait {int(wait_time)} seconds"
+                )
+            user_last_requests[user_id] = user_requests + [now]
 
         # Process query
         await bot.send_chat_action(message.chat.id, ChatAction.TYPING)
         response = model.generate_content(query)
-        await message.reply_text(response.text[:1000])
+        await safe_send_message(
+            message.chat.id,
+            response.text[:1000],
+            reply_to=message.id
+        )
 
     except Exception as e:
-        await message.reply_text(f"Error: {str(e)[:200]}")
+        error_msg = random.choice(PERSONA["fallbacks"]).format(PERSONA["emoji"])
+        if "429" in str(e):
+            error_msg = "Thoda rest kar leti hun...baad mein puchna 🌸"
+        await safe_send_message(message.chat.id, error_msg)
 
 # ================= STARTUP =================
 print("""

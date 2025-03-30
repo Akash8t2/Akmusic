@@ -115,7 +115,7 @@ async def safe_store_message(chat_id, user_id, text, is_group=False):
             print(f"Database error: {e}")
 
 # ================= MESSAGE HANDLERS =================
-@app.on_message(filters.group & filters.text & ~filters.command(["start", "help", "ai"]))
+@app.on_message(filters.group & filters.text & ~filters.command(["hello", "group", "bot"]))
 async def handle_group_message(bot: app, message: Message):
     """Handle group messages safely"""
     try:

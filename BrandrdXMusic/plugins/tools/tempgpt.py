@@ -1,23 +1,36 @@
-import requests
+import google.generativeai as genai
 from BrandrdXMusic import app
-import time
 from pyrogram.enums import ChatAction, ParseMode
 from pyrogram import filters
-from MukeshAPI import api
 
-@app.on_message(filters.command(["chatgpt", "ai", "ask", "", "iri"], prefixes=[".", "J", "j", "s", "", "/"]))
-async def chat_gpt(bot, message):
+# Google Gemini API Key
+GEMINI_API_KEY = "your-api-key-here"
+
+# API Key Set karein
+genai.configure(api_key=GEMINI_API_KEY)
+
+@app.on_message(filters.command(["gemini", "ai", "ask"], prefixes=[".", "/", "!"]))
+async def chat_gemini(bot, message):
     try:
         await bot.send_chat_action(message.chat.id, ChatAction.TYPING)
 
-        # Check if name is defined, if not, set a default value
-        name = message.from_user.first_name if message.from_user else "User"
-
         if len(message.command) < 2:
-            await message.reply_text(f"**Hello {name}, How can I help you today?**")
+            await message.reply_text("❌ **Please provide a question!**")
+            return
+
+        query = message.text.split(' ', 1)[1]
+
+        # Gemini API se response lena
+        model = genai.GenerativeModel("gemini-pro")
+        response = model.generate_content(query)
+
+        # Response send karein
+        if response and hasattr(response, "text"):
+            result_text = response.text
         else:
-            query = message.text.split(' ', 1)[1]
-            response = api.gemini(query)["results"]
-            await message.reply_text(f"{response}", parse_mode=ParseMode.MARKDOWN)
+            result_text = "⚠️ API ne koi valid response nahi diya."
+
+        await message.reply_text(result_text, parse_mode=ParseMode.MARKDOWN)
+
     except Exception as e:
-        await message.reply_text(f"**Error: {e}**")
+        await message.reply_text(f"❌ **Error:** `{e}`")

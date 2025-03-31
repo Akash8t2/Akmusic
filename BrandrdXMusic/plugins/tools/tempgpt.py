@@ -157,7 +157,7 @@ async def handle_ai_query(client, message):
 
 @app.on_message(filters.command("start"))
 async def start_handler(client, message):
-    await message.reply_text("Namaste! Main BrandrdXMusic bot hoon. Kaise madad kar sakta hoon?")
+    await message.reply_text("Namaste! Main ˹𝐀ᴋ ꭙ 𝐌ᴜꜱɪᴄ™ ˹ʙꜱ˼ bot hoon. Kaise madad kar sakta hoon?")
 
 # ================= MAIN FUNCTION =================
 async def main():

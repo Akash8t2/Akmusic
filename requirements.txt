@@ -63,3 +63,4 @@ lexica-api
 cachetools
 google-generativeai
 pytz
+nest_asyncio

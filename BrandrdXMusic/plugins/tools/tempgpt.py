@@ -14,8 +14,8 @@ from collections import defaultdict
 import pytz
 
 # ================= CONFIGURATION =================
-GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "your_api_key_here")
-MONGO_URI = os.getenv("MONGO_URI", "your_mongodb_uri_here")
+GEMINI_API_KEY = os.getenv("GEMINI_API_KEY", "AIzaSyASzHWkz__U3vfRtt-VyToX5vvzzYg7Ipg")
+MONGO_URI = os.getenv("MONGO_URI", "mongodb+srv://akashkashyap8t2:Akking8t2@cluster0.t3sbtoi.mongodb.net/?retryWrites=true&w=majority&appName=Cluster0")
 MAX_HISTORY = 15
 RATE_LIMIT = 5
 RATE_LIMIT_PERIOD = 15

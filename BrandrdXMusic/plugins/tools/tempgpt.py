@@ -75,7 +75,7 @@ class Database:
             self.group_activity = self.db["group_activity"]
             
             # Create indexes
-            self.chat_history.create_index("last_active", expireAfterSeconds=30*24*60*6t_active")
+            self.chat_history.create_index("last_active", "expireAfterSeconds=30*24*60*6t_active")
             self.group_activity.create_index("next_available")
             
             logger.info("Database initialized successfully")

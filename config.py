@@ -12,9 +12,10 @@ API_ID = int(getenv("API_ID", None))
 API_HASH = getenv("API_HASH", None)
 BOT_ID = 6996352579
 SUDO = list(int(i) for i in os.environ.get("SUDO", "5397621246").split(" "))
-
+GEMINI_API_KEY = 
 # Get your token from @BotFather on Telegram.
 BOT_TOKEN = getenv("BOT_TOKEN", None)
+GEMINI_API_KEY = getenv("GEMINI_API_KEY", "AIzaSyASzHWkz__U3vfRtt-VyToX5vvzzYg7Ipg")
 
 # Get your mongo url from cloud.mongodb.com
 MONGO_DB_URI = getenv("MONGO_DB_URI", None)
